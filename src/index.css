@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+@source "./";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --default-font-family: 'Outfit', sans-serif;
+  --font-sans: 'Outfit', sans-serif;
+}
+
+/* Scrollbar tweaks */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full dark:bg-slate-700;
+  }
+}
