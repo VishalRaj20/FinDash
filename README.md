@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/VishalRaj20/FinDash/blob/9fdea039c281ea39ff6b850c80049591707bdc1a/public/Screenshot%202026-04-05%20020618.png" alt="Fin Dashboard" width="100%" />
+</p>
+
 # FinDash
 
 FinDash is a modern, responsive, and highly interactive finance dashboard web application built to cleanly showcase top-tier frontend engineering skills. With a profound focus on design aesthetics, structural cleanliness, and strong data principles, it serves as a completely unified solution for managing personal finance data across defined Role-Based access layers.
