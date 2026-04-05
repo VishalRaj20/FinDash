@@ -6,11 +6,13 @@ import {
 } from 'recharts';
 import { format, parseISO, isValid } from 'date-fns';
 import { formatCurrency } from '../../utils/formatters';
+import { useState, useMemo } from 'react';
 
 const COLORS = ['#3b82f6', '#10b981', '#f43f5e', '#8b5cf6', '#f59e0b', '#06b6d4', '#ec4899', '#6366f1'];
 
 export const Charts = () => {
   const transactions = useStore(state => state.transactions);
+  const [pieChartType, setPieChartType] = useState('expense');
 
   // Prepare processing data for line chart (daily trends)
   const sortedTransactions = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -30,20 +32,22 @@ export const Charts = () => {
   });
   const lineData = Object.values(lineDataMap);
 
-  // Prepare processing data for pie chart (expenses by category)
-  const expenseTransactions = transactions.filter(t => t.type === 'expense');
-  const catDataMap = {};
-  expenseTransactions.forEach(t => {
-    if (!catDataMap[t.category]) {
-      catDataMap[t.category] = 0;
-    }
-    catDataMap[t.category] += t.amount;
-  });
-  
-  const pieData = Object.keys(catDataMap).map(category => ({
-    name: category,
-    value: catDataMap[category]
-  })).sort((a, b) => b.value - a.value);
+  // Prepare processing data for pie chart (dynamic by type)
+  const pieData = useMemo(() => {
+    const filteredTransactions = transactions.filter(t => t.type === pieChartType);
+    const catDataMap = {};
+    filteredTransactions.forEach(t => {
+      if (!catDataMap[t.category]) {
+        catDataMap[t.category] = 0;
+      }
+      catDataMap[t.category] += t.amount;
+    });
+    
+    return Object.keys(catDataMap).map(category => ({
+      name: category,
+      value: catDataMap[category]
+    })).sort((a, b) => b.value - a.value);
+  }, [transactions, pieChartType]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -85,7 +89,15 @@ export const Charts = () => {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-slate-200 dark:text-slate-700/50" />
                 <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'currentColor' }} className="text-slate-500 dark:text-slate-400" axisLine={false} tickLine={false} dy={10} />
-                <YAxis tickFormatter={(val) => `$${val}`} tick={{ fontSize: 12, fill: 'currentColor' }} className="text-slate-500 dark:text-slate-400" axisLine={false} tickLine={false} dx={-10} />
+                <YAxis 
+                  width={60}
+                  tickFormatter={(val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(val)} 
+                  tick={{ fontSize: 12, fill: 'currentColor' }} 
+                  className="text-slate-500 dark:text-slate-400" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  dx={-10} 
+                />
                 <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'currentColor', strokeWidth: 1, strokeDasharray: '4 4' }} className="text-slate-300 dark:text-slate-600" />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '13px', paddingTop: '20px', color: 'inherit' }} />
                 <Line type="monotone" dataKey="income" name="Income" stroke="#10b981" strokeWidth={3} dot={false} activeDot={{ r: 6, strokeWidth: 0 }} />
@@ -101,9 +113,29 @@ export const Charts = () => {
       </Card>
 
       <Card className="flex flex-col h-[420px] hover:shadow-lg transition-shadow duration-300">
-        <div className="mb-2">
-          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Expenses by Category</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Where your money goes</p>
+        <div className="mb-2 flex items-start justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+              {pieChartType === 'expense' ? 'Expenses by Category' : 'Income by Category'}
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {pieChartType === 'expense' ? 'Where your money goes' : 'Where your money comes from'}
+            </p>
+          </div>
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+            <button 
+              onClick={() => setPieChartType('expense')}
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${pieChartType === 'expense' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+            >
+              Expense
+            </button>
+            <button 
+              onClick={() => setPieChartType('income')}
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${pieChartType === 'income' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+            >
+              Income
+            </button>
+          </div>
         </div>
         <div className="flex-1 w-full relative">
           {pieData.length > 0 ? (
@@ -133,8 +165,8 @@ export const Charts = () => {
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-              No expense data available
+            <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-sm">
+              No {pieChartType} data available
             </div>
           )}
         </div>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { TransactionFilters } from '../components/Transactions/TransactionFilters';
 import { TransactionTable } from '../components/Transactions/TransactionTable';
@@ -44,6 +44,21 @@ export const TransactionsPage = () => {
 
     return result;
   }, [transactions, filterText, filterType, sortType]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Cmd + K (Mac) or Ctrl + K (Windows/Linux)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault(); // Prevent default browser search behavior
+        if (role === 'admin') {
+          handleAddClick();
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [role]);
 
   const handleExportCSV = () => {
     if (filteredTransactions.length === 0) return;
@@ -121,12 +136,17 @@ export const TransactionsPage = () => {
       <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-4 pb-6 border-b border-slate-200/50 dark:border-slate-800/50 mb-8">
         <div>
           <motion.h1 
-            className="text-4xl font-extrabold pb-1 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent tracking-tight"
+            className="text-4xl font-extrabold pb-1 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent tracking-tight flex items-center gap-3"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             Transactions
+            {role === 'admin' && (
+              <span className="hidden sm:flex items-center text-xs font-semibold px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-slate-700 mt-2">
+                <kbd className="font-sans">⌘ K</kbd>
+              </span>
+            )}
           </motion.h1>
           <p className="text-lg text-slate-500 dark:text-slate-400 mt-2">Manage and view your financial history.</p>
         </div>

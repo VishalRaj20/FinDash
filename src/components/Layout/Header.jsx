@@ -1,10 +1,19 @@
-import { Moon, Sun, Menu, User, Shield } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Moon, Sun, Menu, User, Shield, Sparkles } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { Button } from '../UI/Button';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const Header = ({ onMenuClick }) => {
-  const { role, setRole, theme, toggleTheme } = useStore();
+  const { role, setRole, theme, toggleTheme, userProfile } = useStore();
+  const [greeting, setGreeting] = useState('');
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting('Good morning');
+    else if (hour < 18) setGreeting('Good afternoon');
+    else setGreeting('Good evening');
+  }, []);
 
   return (
     <header className="h-20 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-white/20 dark:border-slate-800/50 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-30 w-full transition-colors duration-300">
@@ -15,6 +24,20 @@ export const Header = ({ onMenuClick }) => {
         <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 md:hidden">
           FinDash
         </h2>
+        <div className="hidden md:flex flex-col">
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.2 }}
+            className="flex items-center gap-2"
+          >
+            <span className="text-slate-500 dark:text-slate-400 font-medium">{greeting},</span>
+            <span className="text-slate-900 dark:text-slate-100 font-bold flex items-center gap-1.5">
+              {userProfile?.name?.split(' ')[0] || 'User'} 
+              <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+            </span>
+          </motion.div>
+        </div>
       </div>
 
       <div className="flex items-center gap-3 sm:gap-6">

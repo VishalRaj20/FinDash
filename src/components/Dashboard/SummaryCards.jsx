@@ -3,6 +3,39 @@ import { Card } from '../UI/Card';
 import { formatCurrency } from '../../utils/formatters';
 import { Wallet, TrendingUp, TrendingDown, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+
+// Lightweight animated counter hook
+const useCountUp = (end, duration = 1500) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      
+      // Use easeOutQuart curve
+      const easeOut = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.floor(easeOut * end));
+      
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        setCount(end); // Ensure we land exactly on the end number
+      }
+    };
+    window.requestAnimationFrame(step);
+  }, [end, duration]);
+
+  return count;
+};
+
+// Animated Number Component
+const AnimatedNumber = ({ value, isCount }) => {
+  const animatedValue = useCountUp(value);
+  return <>{isCount ? animatedValue : formatCurrency(animatedValue)}</>;
+};
 
 export const SummaryCards = () => {
   const getSummary = useStore(state => state.getSummary);
@@ -77,7 +110,7 @@ export const SummaryCards = () => {
                     {card.title}
                   </p>
                   <p className="text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">
-                    {card.isCount ? card.amount : formatCurrency(card.amount)}
+                    <AnimatedNumber value={card.amount} isCount={card.isCount} />
                   </p>
                 </div>
                 <div className={`p-3.5 rounded-2xl ${card.bgColor} transition-transform group-hover:scale-110 group-hover:rotate-3 duration-300`}>
