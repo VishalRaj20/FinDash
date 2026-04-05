@@ -113,7 +113,7 @@ export const Charts = () => {
       </Card>
 
       <Card className="flex flex-col h-[420px] hover:shadow-lg transition-shadow duration-300">
-        <div className="mb-2 flex items-start justify-between">
+        <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
               {pieChartType === 'expense' ? 'Expenses by Category' : 'Income by Category'}
@@ -122,31 +122,31 @@ export const Charts = () => {
               {pieChartType === 'expense' ? 'Where your money goes' : 'Where your money comes from'}
             </p>
           </div>
-          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg shrink-0">
             <button 
               onClick={() => setPieChartType('expense')}
-              className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${pieChartType === 'expense' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${pieChartType === 'expense' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
             >
               Expense
             </button>
             <button 
               onClick={() => setPieChartType('income')}
-              className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${pieChartType === 'income' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${pieChartType === 'income' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
             >
               Income
             </button>
           </div>
         </div>
-        <div className="flex-1 w-full relative">
+        <div className="flex-1 w-full relative pb-4">
           {pieData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={pieData}
                   cx="50%"
-                  cy="50%"
-                  innerRadius={90}
-                  outerRadius={130}
+                  cy="45%"
+                  innerRadius="50%"
+                  outerRadius="80%"
                   paddingAngle={3}
                   dataKey="value"
                   stroke="none"
@@ -161,7 +161,7 @@ export const Charts = () => {
                   contentStyle={{ backgroundColor: 'var(--color-slate-800)', borderColor: 'var(--color-slate-700)', borderRadius: '12px', color: '#fff', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)' }}
                   itemStyle={{ color: '#fff', fontWeight: 'bold' }}
                 />
-                <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="circle" fontSize={13} wrapperStyle={{ paddingTop: '20px' }} />
+                <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="circle" fontSize={13} wrapperStyle={{ paddingTop: '10px', paddingBottom: '10px' }} />
               </PieChart>
             </ResponsiveContainer>
           ) : (
