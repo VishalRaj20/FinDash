@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/VishalRaj20/FinDash/blob/9fdea039c281ea39ff6b850c80049591707bdc1a/public/Screenshot%202026-04-05%20020618.png" alt="Fin Dashboard" width="100%" />
+  <img src="https://github.com/VishalRaj20/FinDash/blob/1444e97790606207fdcf6bd04d1fe5cc0e0c0af4/public/Screenshot%202026-04-05%20172743.png" alt="Fin Dashboard" width="100%" />
 </p>
 
 # FinDash
